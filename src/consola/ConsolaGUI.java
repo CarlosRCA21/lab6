@@ -76,6 +76,24 @@ public class ConsolaGUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String linea = entrada.getText();
+
+        if (modoEscritura) {
+            imprimir(linea);
+            if (linea.equals("EXIT")) {
+                String res = interprete.texto.escribir(archivoDestino, lineas, modoAppend);
+                imprimir(res);
+                imprimir("");
+                modoEscritura = false;
+                lineas.clear();
+                actualizarPrompt();
+            } else {
+                lineas.add(linea);
+            }
+            entrada.setText("");
+            entrada.requestFocusInWindow();
+            return;
+        }
+
         imprimir(sesion.getPrompt() + linea);
 
         String resultado = interprete.ejecutar(linea);
@@ -85,7 +103,9 @@ public class ConsolaGUI extends JFrame implements ActionListener {
         imprimir("");
 
         entrada.setText("");
-        actualizarPrompt();
+        if (!modoEscritura) {
+            actualizarPrompt();
+        }
         entrada.requestFocusInWindow();
     }
 
@@ -103,5 +123,10 @@ public class ConsolaGUI extends JFrame implements ActionListener {
     }
 
     public void iniciarEscritura(String archivo, boolean append) {
+        modoEscritura = true;
+        archivoDestino = archivo;
+        modoAppend = append;
+        lineas.clear();
+        lblPrompt.setText("> ");
     }
 }
